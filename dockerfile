@@ -1,7 +1,6 @@
 FROM php:5-apache
 RUN apt update
-RUN apt install -y git
-RUN apt install -y libssl-dev
+RUN apt install -y git libssl-dev
 RUN pecl install xdebug
 RUN pecl install mongo
 COPY php5 /usr/local/etc/php
