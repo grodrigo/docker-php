@@ -1,8 +1,13 @@
 FROM php:5-apache
-RUN apt update
-RUN apt install -y git libssl-dev
+COPY 20proxy /etc/apt/apt.conf.d/20proxy
+RUN apt-get update && apt-get -y install \
+       git \
+       libssl-dev \
+    && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin
 RUN pecl install xdebug
 RUN pecl install mongo
 COPY php5 /usr/local/etc/php
 COPY apache2/apache2.conf /etc/apache2/apache2.conf
-RUN a2enmod rewrite && apache2ctl restart
+RUN docker-php-ext-install mysqli
+RUN rm -f /etc/apt/apt.conf.d/20proxy
+RUN a2enmod rewrite
