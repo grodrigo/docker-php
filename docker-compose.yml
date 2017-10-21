@@ -1,0 +1,49 @@
+version: "3"
+
+services:
+
+  
+
+##### MySQL  ####
+  mysql:
+    image: mysql:5
+    
+    environment:
+      MYSQL_ROOT_PASSWORD: developer
+      MYSQL_DATABASE: forms2
+      MYSQL_USER: developer
+      MYSQL_PASSWORD: developer
+    ports:
+      - "3306:3306"
+
+##### APACHE PHP  ####
+  web:
+    image: juanitomint/php5:5.2
+    depends_on:
+      - mysql
+
+    ports:
+      - "80:80"
+     
+    volumes:
+      - ./www:/var/www
+      - ./config/php:/usr/local/etc/php
+      - ./config/apache2/apache2.conf:/etc/apache2/apache2.conf
+   
+##### PHPMyAdmin  ####
+  phpmyadmin:
+      image: splattael/phpmyadmin
+      depends_on:
+        - mysql
+
+      environment:
+      # - PMA_PASSWORD=
+      - PMA_SECRET=kukamonga
+      - PMA_ARBITRARY=1
+      - PHP_UPLOAD_MAX_FILESIZE= 201M
+      - PHP_POST_MAX_SIZE= 201M
+      ports:
+        - 9393:80
+      volumes:
+      - ./www:/var/www/localhost/htdocs/
+      - /sessions
