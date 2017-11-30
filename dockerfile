@@ -3,13 +3,14 @@ FROM php:5-apache
 COPY config/20proxy.conf /etc/apt/apt.conf.d/
 
 RUN apt update && \
-apt install -y git libssl-dev libxml2-dev && \
+apt install -y git libssl-dev libxml2-dev libpng-dev && \
  rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin
 
 RUN docker-php-ext-install soap &&\
     docker-php-ext-install mysqli &&\
     docker-php-ext-install mysql &&\
     docker-php-ext-install pdo_mysql  &&\
+    docker-php-ext-install gd  &&\
     pecl install xdebug &&\
     pecl install mongo
 
