@@ -1,20 +1,22 @@
 FROM php:7.0-apache
-RUN apt update
-RUN apt install -y git libssl-dev libpng-dev
-RUN pecl install xdebug
-RUN pecl install mongodb
-RUN docker-php-ext-install bcmath 
-RUN docker-php-ext-install mysqli
-RUN docker-php-ext-install zip
-RUN docker-php-ext-install gd
-COPY php /usr/local/etc/php
+# APT proxy for faster install uses apt-cacher-ng instance
+COPY config/20proxy.conf /etc/apt/apt.conf.d/
+
+RUN apt update && \
+    apt install -y git libssl-dev libxml2-dev libpng-dev && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin
+
+RUN docker-php-ext-install soap &&\
+    docker-php-ext-install mysqli &&\
+    docker-php-ext-install pdo_mysql  &&\
+    docker-php-ext-install bcmath && \
+    docker-php-ext-install gd  &&\
+    docker-php-ext-install zip && \
+    pecl install xdebug && \
+    pecl install mongodb
+
+#COPY php /usr/local/etc/php
 COPY apache2/apache2.conf /etc/apache2/apache2.conf
 
-### install composer
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \ 
-php -r "if (hash_file('SHA384', 'composer-setup.php') === '544e09ee996cdf60ece3804abc52599c22b1f40f4323403c44d44fdfdd586475ca9813a858088ffbc1f233e9b180f061') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
-php composer-setup.php \
-php -r "unlink('composer-setup.php');" \
-mv composer.phar /usr/local/bin/composer
-
+RUN rm -f /etc/apt/apt.conf.d/20proxy.conf
 RUN a2enmod rewrite 
