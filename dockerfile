@@ -1,4 +1,4 @@
-FROM php:7.0-apache
+FROM php:apache-stretch
 # APT proxy for faster install uses apt-cacher-ng instance
 COPY config/20proxy.conf /etc/apt/apt.conf.d/
 
@@ -15,7 +15,7 @@ RUN docker-php-ext-install soap &&\
     pecl install xdebug && \
     pecl install mongodb
 
-#COPY php /usr/local/etc/php
+COPY config/php /usr/local/etc/php
 COPY apache2/apache2.conf /etc/apache2/apache2.conf
 
 RUN rm -f /etc/apt/apt.conf.d/20proxy.conf
