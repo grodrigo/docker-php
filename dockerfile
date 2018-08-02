@@ -1,4 +1,4 @@
-FROM php:apache-stretch
+FROM php:7-apache-stretch
 # APT proxy for faster install uses apt-cacher-ng instance
 COPY config/20proxy.conf /etc/apt/apt.conf.d/
 
