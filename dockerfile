@@ -5,9 +5,11 @@ LABEL org.label-schema.vcs-ref=$VCS_REF \
 COPY config/20proxy.conf /etc/apt/apt.conf.d/
 
 RUN apt update && \
-    apt install -y git libssl-dev libxml2-dev libpng-dev libc-client-dev libkrb5-dev libpq-dev libzip-dev&& \
+    apt install -y git libssl-dev libxml2-dev libpng-dev libc-client-dev libkrb5-dev libpq-dev libzip-dev locales&& \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin
-
+#build locales
+RUN   echo " es_AR.UTF-8 UTF-8">> /etc/locale.gen && locale-gen
+# install PHP extensions
 RUN    docker-php-ext-install soap
 RUN    docker-php-ext-install mysqli
 RUN    docker-php-ext-install pdo_mysql
