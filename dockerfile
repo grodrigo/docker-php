@@ -5,7 +5,7 @@ LABEL org.label-schema.vcs-ref=$VCS_REF \
 COPY config/20proxy.conf /etc/apt/apt.conf.d/
 
 RUN apt update && \
-    apt install -y git libssl-dev libxml2-dev libpng-dev libc-client-dev libkrb5-dev libpq-dev libzip-dev locales&& \
+    apt install -y git libssl-dev libxml2-dev libpng-dev libc-client-dev libkrb5-dev libpq-dev libzip-dev locales ssl-cert&&  \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin
 #build locales
 RUN   echo " es_AR.UTF-8 UTF-8">> /etc/locale.gen && locale-gen
@@ -30,3 +30,6 @@ COPY apache2/apache2.conf /etc/apache2/apache2.conf
 
 RUN rm -f /etc/apt/apt.conf.d/20proxy.conf
 RUN a2enmod rewrite 
+RUN a2enmod ssl
+RUN a2ensite default-ssl
+
