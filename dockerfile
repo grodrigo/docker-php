@@ -1,4 +1,4 @@
-FROM php:7-apache-stretch
+FROM php:7.2-apache
 LABEL org.label-schema.vcs-ref=$VCS_REF \
       org.label-schema.build-date=$BUILD_DATE 
 # APT proxy for faster install uses apt-cacher-ng instance
