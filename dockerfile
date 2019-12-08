@@ -1,4 +1,8 @@
 FROM php:7.2-apache
+# CONSUME BUILD ARGS FOR TRACE
+ARG VCS_REF
+ARG BUILD_DATE
+
 LABEL org.label-schema.vcs-ref=$VCS_REF \
       org.label-schema.build-date=$BUILD_DATE 
 # APT proxy for faster install uses apt-cacher-ng instance
