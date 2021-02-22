@@ -1,0 +1,60 @@
+Sending build context to Docker daemon  1.733MB
+Step 1/19 : FROM php:5-apache
+ ---> 24c791995c1e
+Step 2/19 : RUN apt update     && apt install -y     git libssl-dev libxml2-dev     libpng-dev locales ssl-cert     libldap2-dev libzip-dev     libssl-dev     && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*.deb     /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin
+ ---> Using cache
+ ---> 9826d488dc64
+Step 3/19 : RUN   echo " es_AR.UTF-8 UTF-8">> /etc/locale.gen && locale-gen
+ ---> Using cache
+ ---> 1143d07af32e
+Step 4/19 : RUN docker-php-ext-install soap
+ ---> Using cache
+ ---> 01e11e9fb7b6
+Step 5/19 : RUN docker-php-ext-install mysqli
+ ---> Using cache
+ ---> 19b78dc8fe8a
+Step 6/19 : RUN docker-php-ext-install mysql
+ ---> Using cache
+ ---> 8d477f390153
+Step 7/19 : RUN docker-php-ext-install pdo_mysql
+ ---> Using cache
+ ---> a7f43d3f307e
+Step 8/19 : RUN docker-php-ext-install gd
+ ---> Using cache
+ ---> e96afd35f0a6
+Step 9/19 : RUN docker-php-ext-configure zip --with-libzip
+ ---> Using cache
+ ---> 73a6e19374a2
+Step 10/19 : RUN docker-php-ext-install zip
+ ---> Using cache
+ ---> 41781d7e06f7
+Step 11/19 : RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/
+ ---> Using cache
+ ---> 4eba3ed40a55
+Step 12/19 : RUN docker-php-ext-install ldap
+ ---> Using cache
+ ---> a862e097d6ce
+Step 13/19 : RUN pecl install mongo
+ ---> Using cache
+ ---> 1ea29778b57e
+Step 14/19 : COPY php5/ /usr/local/etc/php
+ ---> Using cache
+ ---> ce3587a166b0
+Step 15/19 : COPY apache2/apache2.conf /etc/apache2/apache2.conf
+ ---> Using cache
+ ---> 9c8ca4c73d84
+Step 16/19 : RUN rm -f /etc/apt/apt.conf.d/20proxy.conf
+ ---> Using cache
+ ---> 608743eba322
+Step 17/19 : RUN a2enmod rewrite
+ ---> Using cache
+ ---> 191193ae5465
+Step 18/19 : RUN a2enmod ssl
+ ---> Using cache
+ ---> 0bcefbb079fa
+Step 19/19 : RUN a2ensite default-ssl
+ ---> Using cache
+ ---> 0628615a8593
+[Warning] One or more build-args [BUILD_DATE VCS_REF] were not consumed
+Successfully built 0628615a8593
+Successfully tagged grodrigo/php:5.6-apache
