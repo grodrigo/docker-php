@@ -38,7 +38,7 @@ RUN    pecl install mongodb
 RUN echo "extension=mongodb.so" >> /usr/local/etc/php/conf.d/mongodb.ini
 
 COPY apache2/apache2.conf /etc/apache2/apache2.conf
-COPY apache2/sites-enabled/vhost.conf /etc/apache2/sites-available/000-default.conf
+COPY apache2/sites-enabled/vhost.conf /etc/apache2/sites-enabled/000-default.conf
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
