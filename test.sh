@@ -1,2 +1,2 @@
 #!/bin/sh
- docker run -it --rm juanitomint/php7 bash
+docker run -it --rm grodrigo/php:7.4-apache-laravel-legajoUnico bash
