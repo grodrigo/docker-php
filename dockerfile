@@ -13,7 +13,7 @@ LABEL org.label-schema.vcs-ref=$VCS_REF \
 WORKDIR /var/www/html
 
 RUN apt update && \
-    apt install -y git libssl-dev libxml2-dev libpng-dev libc-client-dev libkrb5-dev libpq-dev libzip-dev locales ssl-cert&&  \
+    apt install -y git libssl-dev libxml2-dev libpng-dev libc-client-dev libkrb5-dev libpq-dev libzip-dev locales ssl-cert openssl libonig-dev && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin
 #build locales
 RUN   echo " es_AR.UTF-8 UTF-8">> /etc/locale.gen && locale-gen
@@ -27,6 +27,12 @@ RUN    docker-php-ext-install pdo_mysql
 RUN    docker-php-ext-install bcmath
 RUN    docker-php-ext-install gd
 RUN    docker-php-ext-install zip
+RUN    docker-php-ext-install ctype
+RUN    docker-php-ext-install fileinfo
+RUN    docker-php-ext-install json
+RUN    docker-php-ext-install mbstring
+RUN    docker-php-ext-install tokenizer
+RUN    docker-php-ext-install xml
 
 RUN    docker-php-ext-configure imap --with-kerberos --with-imap-ssl &&\
        docker-php-ext-install imap
