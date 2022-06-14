@@ -13,7 +13,7 @@ LABEL org.label-schema.vcs-ref=$VCS_REF \
 WORKDIR /var/www/html
 
 RUN apt update && \
-    apt install -y git libssl-dev libxml2-dev libpng-dev libc-client-dev libkrb5-dev libpq-dev libzip-dev locales ssl-cert p7zip-full &&  \
+    apt install -y git libssl-dev libxml2-dev libpng-dev libc-client-dev libkrb5-dev libpq-dev libzip-dev locales ssl-cert p7zip-full libcurl4-openssl-dev libldap2-dev &&  \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin
 #build locales
 RUN   echo " es_AR.UTF-8 UTF-8">> /etc/locale.gen && locale-gen
@@ -21,15 +21,13 @@ RUN   echo " es_AR.UTF-8 UTF-8">> /etc/locale.gen && locale-gen
 
 COPY config/php/php.ini-production /usr/local/etc/php/php.ini
 
-RUN  docker-php-ext-install soap mysqli pdo_mysql bcmath gd zip
+RUN  docker-php-ext-install soap mysqli pdo_mysql bcmath gd zip curl
 
 RUN  docker-php-ext-configure imap --with-kerberos --with-imap-ssl &&\
-     docker-php-ext-install imap
+     docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ &&\
+     docker-php-ext-install imap ldap pgsql pdo_pgsql
 
-RUN  docker-php-ext-install  pgsql pdo_pgsql
-RUN  pecl install xdebug 
-
-RUN  pecl install mongodb
+RUN  pecl install xdebug mongodb
 RUN  echo "extension=mongodb.so" >> /usr/local/etc/php/conf.d/mongodb.ini
 
 COPY apache2/apache2.conf /etc/apache2/apache2.conf
