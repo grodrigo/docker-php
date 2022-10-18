@@ -1,55 +1,75 @@
 FROM php:7.4-apache
 
-# not the best, due laravel permissions on storage on mount from docker-compose. On stateless do redesign
-RUN usermod -u 1000 www-data
+RUN apt-get clean && apt-get -y update && apt-get install -y locales locales-all
 
-# CONSUME BUILD ARGS FOR TRACE
-ARG VCS_REF
-ARG BUILD_DATE
 
-LABEL org.label-schema.vcs-ref=$VCS_REF \
-      org.label-schema.build-date=$BUILD_DATE 
+# 2. Lenguaje 
+#enable localisation and generates localisation files
+RUN sed -i -e 's/# es_AR/es_AR/' /etc/locale.gen && \
+    locale-gen
+ENV LC_ALL es_AR
+ENV LANG es_AR
+ENV LANGUAGE es_AR
 
-WORKDIR /var/www/html
 
-RUN apt update && \
-    apt install -y git libssl-dev libxml2-dev libpng-dev libc-client-dev libkrb5-dev libpq-dev libzip-dev locales ssl-cert openssl libonig-dev && \
-    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin
-#build locales
-RUN   echo " es_AR.UTF-8 UTF-8">> /etc/locale.gen && locale-gen
-# install PHP extensions
+# 1. development packages
+RUN apt-get install -y \
+    git \
+    zip \
+    curl \
+    sudo \
+    unzip \
+    libonig-dev \
+    libzip-dev \
+    libicu-dev \
+    libbz2-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libmcrypt-dev \
+    libreadline-dev \
+    libfreetype6-dev \
+    g++ libxml2-dev 
 
-COPY config/php/php.ini-production /usr/local/etc/php/php.ini
 
-RUN    docker-php-ext-install soap
-RUN    docker-php-ext-install mysqli
-RUN    docker-php-ext-install pdo_mysql
-RUN    docker-php-ext-install bcmath
-RUN    docker-php-ext-install gd
-RUN    docker-php-ext-install zip
-RUN    docker-php-ext-install ctype
-RUN    docker-php-ext-install fileinfo
-RUN    docker-php-ext-install json
-RUN    docker-php-ext-install mbstring
-RUN    docker-php-ext-install tokenizer
-RUN    docker-php-ext-install xml
+# 3. apache configs + document root
+ENV APACHE_DOCUMENT_ROOT=/var/www/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-RUN    docker-php-ext-configure imap --with-kerberos --with-imap-ssl &&\
-       docker-php-ext-install imap
+# 4. mod_rewrite for URL rewrite and mod_headers for .htaccess extra headers like Access-Control-Allow-Origin-
+RUN a2enmod rewrite headers
 
-RUN    docker-php-ext-install  pgsql pdo_pgsql
-RUN    pecl install xdebug 
+# 5. start with base php config, then add extensions
+RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 
-RUN    pecl install mongodb
-RUN echo "extension=mongodb.so" >> /usr/local/etc/php/conf.d/mongodb.ini
+# 6. Crear un alias para php artisan
+RUN alias pa="/var/www/php artisan"
 
-COPY apache2/apache2.conf /etc/apache2/apache2.conf
-COPY apache2/sites-enabled/vhost.conf /etc/apache2/sites-enabled/000-default.conf
+# 7. Instalar NPM
+RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash -
+RUN apt-get install -y nodejs
 
-# Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+#8. Configurar memory limit de PHP
+# RUN cd /usr/local/etc/php/conf.d/ &&  echo 'memory_limit = -1' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini
+RUN cd /usr/local/etc/php/conf.d/ && \
+  echo 'memory_limit = 2048M' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini  && \
+  echo 'max_execution_time = 3600' >> /usr/local/etc/php/conf.d/docker-php-maxexectime.ini;
 
-RUN a2enmod rewrite 
-RUN a2enmod ssl
-RUN a2ensite default-ssl
+#9. Intalar extenciones PHP
+RUN docker-php-ext-install \
+    bz2 \
+    intl \
+    iconv \
+    bcmath \
+    opcache \
+    calendar \
+    mbstring \
+    pdo_mysql \
+    zip \
+    gd soap
 
+#10. Composer
+RUN curl -sS https://getcomposer.org/installer -o composer-setup.php && php composer-setup.php --version=2.0.0 --install-dir=/usr/local/bin --filename=composer
+
+#11. Workdir.
+WORKDIR /var/www
