@@ -41,6 +41,8 @@ RUN a2enmod ssl
 RUN a2ensite default-ssl
 
 RUN cd /usr/local/etc/php/conf.d/ && \
-  echo 'memory_limit = 2048M' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini
+  echo 'memory_limit = 2048M' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini  && \
+  echo 'max_execution_time = 3600' >> /usr/local/etc/php/conf.d/docker-php-maxexectime.ini;
+# para interfaz + max_execution_time
 
 RUN sed -i 's/CipherString = DEFAULT@SECLEVEL=2/CipherString = DEFAULT@SECLEVEL=1/g' /etc/ssl/openssl.cnf
