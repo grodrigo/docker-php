@@ -8,13 +8,13 @@ ARG VCS_REF
 ARG BUILD_DATE
 
 LABEL org.label-schema.vcs-ref=$VCS_REF \
-      org.label-schema.build-date=$BUILD_DATE 
+  org.label-schema.build-date=$BUILD_DATE 
 
 WORKDIR /var/www/html
 
 RUN apt update && \
-    apt install -y git libssl-dev libxml2-dev libpng-dev libc-client-dev libkrb5-dev libpq-dev libzip-dev locales ssl-cert p7zip-full libcurl4-openssl-dev libldap2-dev &&  \
-    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin
+  apt install -y git libssl-dev libxml2-dev libpng-dev libc-client-dev libkrb5-dev libpq-dev libzip-dev locales ssl-cert p7zip-full libcurl4-openssl-dev libldap2-dev &&  \
+  rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin
 #build locales
 RUN   echo " es_AR.UTF-8 UTF-8">> /etc/locale.gen && locale-gen
 # install PHP extensions
@@ -24,8 +24,8 @@ COPY config/php/php.ini-production /usr/local/etc/php/php.ini
 RUN  docker-php-ext-install soap mysqli pdo_mysql bcmath gd zip curl
 
 RUN  docker-php-ext-configure imap --with-kerberos --with-imap-ssl &&\
-     docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ &&\
-     docker-php-ext-install imap ldap pgsql pdo_pgsql
+  docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ &&\
+  docker-php-ext-install imap ldap pgsql pdo_pgsql
 
 RUN  pecl install xdebug mongodb
 RUN  echo "extension=mongodb.so" >> /usr/local/etc/php/conf.d/mongodb.ini
@@ -42,6 +42,7 @@ RUN a2ensite default-ssl
 
 RUN cd /usr/local/etc/php/conf.d/ && \
   echo 'memory_limit = 2048M' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini  && \
+  echo 'upload_max_filesize = 20M' >> /usr/local/etc/php/conf.d/docker-php-uploadmax.ini  && \
   echo 'max_execution_time = 3600' >> /usr/local/etc/php/conf.d/docker-php-maxexectime.ini;
 # para interfaz + max_execution_time
 
