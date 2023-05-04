@@ -1,4 +1,4 @@
-FROM php:7.4-apache
+FROM php:8.2-apache
 
 # not the best, due laravel permissions on storage on mount from docker-compose. On stateless do redesign
 RUN usermod -u 1000 www-data
@@ -29,9 +29,7 @@ RUN    docker-php-ext-install gd
 RUN    docker-php-ext-install zip
 RUN    docker-php-ext-install ctype
 RUN    docker-php-ext-install fileinfo
-RUN    docker-php-ext-install json
 RUN    docker-php-ext-install mbstring
-RUN    docker-php-ext-install tokenizer
 RUN    docker-php-ext-install xml
 
 RUN    docker-php-ext-configure imap --with-kerberos --with-imap-ssl &&\
