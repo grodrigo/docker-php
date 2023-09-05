@@ -8,7 +8,7 @@ ARG VCS_REF
 ARG BUILD_DATE
 
 LABEL org.label-schema.vcs-ref=$VCS_REF \
-      org.label-schema.build-date=$BUILD_DATE 
+    org.label-schema.build-date=$BUILD_DATE 
 
 WORKDIR /var/www/html
 
@@ -16,8 +16,15 @@ RUN apt update && \
     apt install -y git libssl-dev libxml2-dev libpng-dev libc-client-dev libkrb5-dev libpq-dev libzip-dev locales ssl-cert openssl libonig-dev && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin
 #build locales
-RUN   echo " es_AR.UTF-8 UTF-8">> /etc/locale.gen && locale-gen
+# RUN   echo " es_AR.UTF-8 UTF-8">> /etc/locale.gen && locale-gen
 # install PHP extensions
+
+# Set the locale
+RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
+    locale-gen
+ENV LANG=en_US.UTF-8 \ 
+    LANGUAGE=en_US \ 
+    LC_ALL=en_US.UTF-8
 
 COPY config/php/php.ini-production /usr/local/etc/php/php.ini
 
@@ -33,7 +40,7 @@ RUN    docker-php-ext-install mbstring
 RUN    docker-php-ext-install xml
 
 RUN    docker-php-ext-configure imap --with-kerberos --with-imap-ssl &&\
-       docker-php-ext-install imap
+    docker-php-ext-install imap
 
 RUN    docker-php-ext-install  pgsql pdo_pgsql
 RUN    pecl install xdebug 
