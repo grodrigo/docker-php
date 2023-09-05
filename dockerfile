@@ -1,4 +1,4 @@
-FROM php:8.2-apache
+FROM php:8.2.9-apache-bullseye
 
 # not the best, due laravel permissions on storage on mount from docker-compose. On stateless do redesign
 RUN usermod -u 1000 www-data
