@@ -1,3 +1,3 @@
 #!/bin/sh
- docker push grodrigo/php:5.6-apache
+ docker push grodrigo/php:5.5.9-ubuntu14
  

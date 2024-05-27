@@ -1,39 +1,35 @@
-FROM php:5-apache
+FROM ubuntu:14.04
 
-# deb http://archive.debian.org/debian-security stretch/updates main
-# RUN sed -i -- 's/deb.debian.org/archive.debian.org/g' /etc/apt/sources.list && \
-#   sed -i -- 's/# deb.debian.org/archive.debian.org/g' /etc/apt/sources.list
-RUN sed -i s/deb.debian.org/archive.debian.org/g /etc/apt/sources.list && \
-  sed -i 's|security.debian.org|archive.debian.org|g' /etc/apt/sources.list && \
-  sed -i '/stretch-updates/d' /etc/apt/sources.list
+# RUN sed -i -- 's/archive/old-releases/g' /etc/apt/sources.list && \
+#   sed -i -- 's/# archive/old-releases/g' /etc/apt/sources.list
 
-RUN apt update \
-  && apt install -y \
-  git libssl-dev libxml2-dev \
-  libpng-dev locales ssl-cert \
-  libldap2-dev libzip-dev \
+RUN apt-get update \
+  && apt-get -y install \
+  apache2 \
+  php5 \
+  php5-cli \
+  libapache2-mod-php5 \
+  php5-mysql \
+  php5-mysql \
+  php5-xdebug \
+  curl \
+  lynx \
+  git \
   libssl-dev \
-  && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*.deb \
-  /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin
+  && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin
 
-#build locales
-RUN   echo " es_AR.UTF-8 UTF-8">> /etc/locale.gen && locale-gen
+### Uncomment to build with custom configs
+#COPY php5 /usr/local/etc/php
+#COPY apache2/apache2.conf /etc/apache2/apache2.conf
 
-RUN docker-php-ext-install soap
-RUN docker-php-ext-install mysqli
-RUN docker-php-ext-install mysql
-RUN docker-php-ext-install pdo_mysql 
-RUN docker-php-ext-install gd 
-RUN docker-php-ext-configure zip --with-libzip 
-RUN docker-php-ext-install zip
-RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/
-RUN docker-php-ext-install ldap
-RUN pecl install mongo
-
-COPY php5/ /usr/local/etc/php
-COPY apache2/apache2.conf /etc/apache2/apache2.conf
-
-RUN rm -f /etc/apt/apt.conf.d/20proxy.conf
+## Entrypoint and apache foreground
+# COPY docker-php-ext-* docker-php-entrypoint /usr/local/bin/
+# RUN rm -f /etc/apt/apt.conf.d/20proxy
 RUN a2enmod rewrite
-RUN a2enmod ssl
-RUN a2ensite default-ssl
+# COPY apache2-foreground /usr/local/bin/
+WORKDIR /var/www/
+
+# ENTRYPOINT ["docker-php-entrypoint"]
+EXPOSE 80
+
+CMD apachectl -D FOREGROUND
