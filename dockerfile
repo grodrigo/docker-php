@@ -1,13 +1,20 @@
 FROM php:5-apache
 
+# deb http://archive.debian.org/debian-security stretch/updates main
+# RUN sed -i -- 's/deb.debian.org/archive.debian.org/g' /etc/apt/sources.list && \
+#   sed -i -- 's/# deb.debian.org/archive.debian.org/g' /etc/apt/sources.list
+RUN sed -i s/deb.debian.org/archive.debian.org/g /etc/apt/sources.list && \
+  sed -i 's|security.debian.org|archive.debian.org|g' /etc/apt/sources.list && \
+  sed -i '/stretch-updates/d' /etc/apt/sources.list
+
 RUN apt update \
-    && apt install -y \
-    git libssl-dev libxml2-dev \
-    libpng-dev locales ssl-cert \
-    libldap2-dev libzip-dev \
-    libssl-dev \
-    && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*.deb \
-    /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin
+  && apt install -y \
+  git libssl-dev libxml2-dev \
+  libpng-dev locales ssl-cert \
+  libldap2-dev libzip-dev \
+  libssl-dev \
+  && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*.deb \
+  /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin
 
 #build locales
 RUN   echo " es_AR.UTF-8 UTF-8">> /etc/locale.gen && locale-gen
