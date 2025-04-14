@@ -48,3 +48,5 @@ RUN cd /usr/local/etc/php/conf.d/ && \
 # para interfaz + max_execution_time
 
 RUN sed -i 's/CipherString = DEFAULT@SECLEVEL=2/CipherString = DEFAULT@SECLEVEL=1/g' /etc/ssl/openssl.cnf
+
+COPY --chmod=755 deploy.sh .
