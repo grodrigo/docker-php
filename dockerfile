@@ -1,5 +1,4 @@
-FROM php:7.4.33-apache-bullseye
-
+FROM php:7.2-apache-buster
 # not the best, due laravel permissions on storage on mount from docker-compose. On stateless do redesign
 RUN usermod -u 1000 www-data
 
