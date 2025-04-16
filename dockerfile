@@ -28,7 +28,7 @@ RUN  docker-php-ext-configure imap --with-kerberos --with-imap-ssl &&\
   docker-php-ext-install imap ldap pgsql pdo_pgsql
 
 # Instalar las extensiones mongodb y xdebug sin interacción
-RUN pecl install -n mongodb-1.20.1 && \
+RUN pecl install -n mongodb-1.6.1 && \
   pecl install -n xdebug-3.1.5
 
 # Habilitar las extensiones
